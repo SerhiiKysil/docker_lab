@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+env/
+
+# Системні файли ОС
+.DS_Store
+Thumbs.db
+
+# Дані
+/data/*.csv
+
+# Згенеровані звіти та графіки
+/reports/*.json
+/plots/*.png
+
+# Секрети (якщо колись додаси файл з паролями)
+.env

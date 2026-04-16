@@ -1,0 +1,88 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: cars_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d cars_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lab_network
+
+  data_load:
+    build:
+      context: ./data_load
+    volumes:
+      - ./data:/app/data
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/cars_db
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - lab_network
+
+  data_quality_analysis:
+    build:
+      context: ./data_quality_analysis
+    volumes:
+      - ./reports:/app/reports  # Спільний том для звітів
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/cars_db
+    depends_on:
+      data_load:
+        condition: service_completed_successfully # Чекаємо завершення завантаження!
+    networks:
+      - lab_network
+
+  data_research:
+    build:
+      context: ./data_research
+    volumes:
+      - ./reports:/app/reports  # Спільний том для звітів
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/cars_db
+    depends_on:
+      data_load:
+        condition: service_completed_successfully # Чекаємо завершення завантаження!
+    networks:
+      - lab_network
+
+  visualization:
+    build:
+      context: ./visualization
+    volumes:
+      - ./plots:/app/plots  # Спільний том для графіків
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/cars_db
+    depends_on:
+      data_load:
+        condition: service_completed_successfully # Чекаємо завершення завантаження!
+    networks:
+      - lab_network
+
+  web:
+    build:
+      context: ./web
+    ports:
+      - "5000:5000" # Прокидаємо порт, щоб заходити через браузер
+    volumes:
+      - ./reports:/app/reports:ro # Підключаємо звіти тільки для читання (ro)
+      - ./plots:/app/plots:ro     # Підключаємо графіки тільки для читання
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/cars_db
+    depends_on:
+      visualization:
+        condition: service_completed_successfully # Веб запуститься, коли всі графіки вже намальовані
+    networks:
+      - lab_network
+
+networks:
+  lab_network:
+    driver: bridge
