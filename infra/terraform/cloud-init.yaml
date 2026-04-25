@@ -1,0 +1,24 @@
+#cloud-config
+package_upgrade: true
+
+packages:
+  - git
+  - curl
+  - apt-transport-https
+  - ca-certificates
+  - software-properties-common
+
+runcmd:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker azureuser
+
+  - git clone https://github.com/SerhiiKysil/docker_lab.git /home/azureuser/docker_lab
+  - chown -R azureuser:azureuser /home/azureuser/docker_lab
+
+  - cd /home/azureuser/docker_lab
+  - docker compose up --build -d
