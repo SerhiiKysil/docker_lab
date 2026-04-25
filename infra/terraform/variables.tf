@@ -5,10 +5,10 @@ variable "resource_group_name" {
 
 variable "location" {
   type    = string
-  default = "West Europe"
+  default = "eastus"
 }
 
 variable "vm_size" {
   type    = string
-  default = "Standard_B1ms"
+  default = "Standard_B2s"
 }
