@@ -10,9 +10,6 @@ env/
 .DS_Store
 Thumbs.db
 
-# Дані
-/data/*.csv
-
 # Згенеровані звіти та графіки
 /reports/*.json
 /plots/*.png
