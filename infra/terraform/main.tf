@@ -68,7 +68,7 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "Grafana"
+    name                       = "AllowGrafana"
     priority                   = 1012
     direction                  = "Inbound"
     access                     = "Allow"
