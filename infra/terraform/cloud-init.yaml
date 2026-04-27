@@ -21,4 +21,6 @@ runcmd:
   - chown -R azureuser:azureuser /home/azureuser/docker_lab
 
   - cd /home/azureuser/docker_lab
-  - docker compose up --build -d
+  - docker network create labor_network || true
+  - docker compose -f docker-compose.yml up --build -d
+  - docker compose -f docker-compose.monitoring.yml up -d
