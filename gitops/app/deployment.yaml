@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-lab-web
+  namespace: docker-lab
+  labels:
+    app: docker-lab-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-lab-web
+  template:
+    metadata:
+      labels:
+        app: docker-lab-web
+    spec:
+      containers:
+        - name: docker-lab-web
+          image: serhiikysilshi/docker-lab-web:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://myuser:mypassword@db:5432/cars_db"
